@@ -1,8 +1,7 @@
 {
     "sql_db_host": "localhost",
-    "sql_db_user": "root",
-    "sql_db_pass": "",
-    "sql_db_name": "findl3vp_findlocalldb",
-    "site_url": "http://findlocall.com",
-    "purchase_code": "6bb2fed8-cbc9-4ff7-b2b2-3d656889c2ab"
+    "sql_db_user": "findl3vp_dbtester",
+    "sql_db_pass": "!@#1234findlocall",
+    "sql_db_name": "findl3vp_dbtesting",
+    "site_url": "https://findlocall-socket-server.onrender.com/"
 }
