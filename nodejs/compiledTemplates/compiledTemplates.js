@@ -1,6 +1,8 @@
 let Handlebars = require("handlebars")
 let fs = require("fs")
 const path = require('path');
+const funcs = require('../functions/functions');
+
 let chatList ;
 let groupList;
 let offlineUser;
@@ -20,34 +22,46 @@ let onlineUserTemplate;
 let messageGroupRecipientsTemplate;
 let messageRecipientsTemplate;
 
-
-const funcs = require('../functions/functions');
 const { group } = require("console");
 module.exports.DefineTemplates = async (ctx) => {
-    chatList = fs.readFileSync(path.resolve(__dirname, '../../themes/'+ctx.globalconfig['theme']+'/layout/nodejs/chat-list.phtml'));
-    const path = '/themes/sunshine/layout/nodejs/chat-list.phtml';
-    let chatList = '';
-    if (fs.existsSync(path)) {
-        chatList = fs.readFileSync(path, 'utf8');
-    } else {
-        console.warn(`⚠️ Template not found: ${path}. Skipping.`);
-    }
-    
-    groupList =  fs.readFileSync(path.resolve(__dirname, '../../themes/'+ctx.globalconfig['theme']+'/layout/nodejs/group-list.phtml'));
-    offlineUser =  fs.readFileSync(path.resolve(__dirname, '../../themes/'+ctx.globalconfig['theme']+'/layout/nodejs/offline-user.phtml'));
-    onlineUser =  fs.readFileSync(path.resolve(__dirname, '../../themes/'+ctx.globalconfig['theme']+'/layout/nodejs/online-user.phtml'));
-    messageList =  fs.readFileSync(path.resolve(__dirname, '../../themes/'+ctx.globalconfig['theme']+'/layout/nodejs/message-text-list.phtml'));
-    messageGroupRecipientsList =  fs.readFileSync(path.resolve(__dirname, '../../themes/'+ctx.globalconfig['theme']+'/layout/nodejs/messages-group-list.phtml'));
-    messageRecipientsList =  fs.readFileSync(path.resolve(__dirname, '../../themes/'+ctx.globalconfig['theme']+'/layout/nodejs/messages-recipients-list.phtml'));
+  try {
+    const theme = (ctx.globalconfig && ctx.globalconfig["theme"]) ? ctx.globalconfig["theme"] : "sunshine";
+    const basePath = path.resolve(__dirname, `../../themes/${theme}/layout/nodejs`);
 
-    chatListTemplate = Handlebars.compile(chatList.toString());
-    groupListTemplate = Handlebars.compile(groupList.toString());
-    messageListTemplate = Handlebars.compile(messageList.toString());
-    offlineUserTemplate = Handlebars.compile(offlineUser.toString());
-    onlineUserTemplate = Handlebars.compile(onlineUser.toString());
-    messageGroupRecipientsTemplate = Handlebars.compile(messageGroupRecipientsList.toString());
-    messageRecipientsTemplate = Handlebars.compile(messageRecipientsList.toString());
-}
+    // Helper to safely load a file if it exists
+    const safeRead = (fileName) => {
+      const filePath = path.join(basePath, fileName);
+      if (fs.existsSync(filePath)) {
+        return fs.readFileSync(filePath, "utf8");
+      } else {
+        console.warn(`⚠️ Template not found: ${filePath}. Skipping.`);
+        return "";
+      }
+    };
+
+    // ✅ Load templates safely (if not found, they’ll just be empty)
+    const chatList = safeRead("chat-list.phtml");
+    const groupList = safeRead("group-list.phtml");
+    const offlineUser = safeRead("offline-user.phtml");
+    const onlineUser = safeRead("online-user.phtml");
+    const messageList = safeRead("message-text-list.phtml");
+    const messageGroupRecipientsList = safeRead("messages-group-list.phtml");
+    const messageRecipientsList = safeRead("messages-recipients-list.phtml");
+
+    // ✅ Compile templates (Handlebars won’t fail on empty strings)
+    chatListTemplate = Handlebars.compile(chatList);
+    groupListTemplate = Handlebars.compile(groupList);
+    messageListTemplate = Handlebars.compile(messageList);
+    offlineUserTemplate = Handlebars.compile(offlineUser);
+    onlineUserTemplate = Handlebars.compile(onlineUser);
+    messageGroupRecipientsTemplate = Handlebars.compile(messageGroupRecipientsList);
+    messageRecipientsTemplate = Handlebars.compile(messageRecipientsList);
+
+    console.log("✅ Templates initialized successfully");
+  } catch (err) {
+    console.error("❌ Error defining templates:", err.message);
+  }
+};
 module.exports.messageRecipientsTemplate = async (ctx, recipientUserId, isActive, isOnline, count_messages, messageText) => {
     let user = await funcs.Wo_UserData(ctx, recipientUserId)
     if (user) {
