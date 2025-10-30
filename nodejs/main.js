@@ -128,7 +128,7 @@ async function main() {
   await init()
 
   app.get('/', (req, res) => {
-    res.sendFile(__dirname + '/index.html');
+    res.send("Socket server is running successfully");
   });
   io = require('socket.io')(server, {
     allowEIO3: true,
