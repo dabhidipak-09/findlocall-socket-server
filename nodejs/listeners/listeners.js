@@ -56,6 +56,10 @@ module.exports.registerListeners = async (socket, io, ctx) => {
     console.log('a user connected ' + socket.id + " Hash " + JSON.stringify(socket.handshake.query));
 
     await compiledTemplates.DefineTemplates(ctx);
+    if (!ctx.chatListTemplate) {
+        console.warn("⚠️ chat-list template missing, continuing without it...");
+    }
+
     ctx.reactions_types = await funcs.Wo_GetReactionsTypes(ctx);
 
     socket.on("join", async (data, callback) => {

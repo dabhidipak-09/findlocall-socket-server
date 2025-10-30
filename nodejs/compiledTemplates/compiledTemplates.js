@@ -25,6 +25,14 @@ const funcs = require('../functions/functions');
 const { group } = require("console");
 module.exports.DefineTemplates = async (ctx) => {
     chatList = fs.readFileSync(path.resolve(__dirname, '../../themes/'+ctx.globalconfig['theme']+'/layout/nodejs/chat-list.phtml'));
+    const path = '/themes/sunshine/layout/nodejs/chat-list.phtml';
+    let chatList = '';
+    if (fs.existsSync(path)) {
+        chatList = fs.readFileSync(path, 'utf8');
+    } else {
+        console.warn(`⚠️ Template not found: ${path}. Skipping.`);
+    }
+    
     groupList =  fs.readFileSync(path.resolve(__dirname, '../../themes/'+ctx.globalconfig['theme']+'/layout/nodejs/group-list.phtml'));
     offlineUser =  fs.readFileSync(path.resolve(__dirname, '../../themes/'+ctx.globalconfig['theme']+'/layout/nodejs/offline-user.phtml'));
     onlineUser =  fs.readFileSync(path.resolve(__dirname, '../../themes/'+ctx.globalconfig['theme']+'/layout/nodejs/online-user.phtml'));
