@@ -53,6 +53,17 @@ const { ColorChangedController } = require('../controllers/ColorChangedControlle
 
 module.exports.registerListeners = async (socket, io, ctx) => {
 
+    console.log('🟢 registerListeners called for socket:', socket.id);
+
+    // DEBUG: listen for private_message and print to server console
+    socket.on('private_message', (data) => {
+        console.log("📩 LIVE: private_message", data);
+        socket.emit("private_message_response", {
+            status: "ok",
+            received: data
+        });
+    });
+
     console.log('a user connected ' + socket.id + " Hash " + JSON.stringify(socket.handshake.query));
 
     await compiledTemplates.DefineTemplates(ctx);
